@@ -1,3 +1,4 @@
+import '@fontsource-variable/inter'
 import '../sass/app.scss'
 import 'bootstrap'
 
@@ -7,6 +8,7 @@ import App from '~/components/App.vue'
 import { config } from '~/config.js'
 import { http, installInterceptors } from '~/lib/http.js'
 import { installTitle } from '~/lib/title.js'
+import { useTheme } from '~/lib/theme.js'
 import { showServerError } from '~/lib/serverError.js'
 import { i18n, loadMessages } from '~/plugins/i18n.js'
 import { FontAwesomeIcon } from '~/plugins/fontawesome.js'
@@ -46,6 +48,7 @@ async function boot () {
   })
 
   installTitle(router, i18n, config.appName)
+  useTheme()
 
   app.use(i18n)
   app.use(router)

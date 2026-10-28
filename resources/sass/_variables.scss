@@ -1,18 +1,90 @@
+// Design tokens. Bootstrap 5.3 color modes: light by default, dark via
+// <html data-bs-theme="dark"> (set before first paint by the inline script in
+// index.html / spa.blade.php, then kept in sync by ~/lib/theme.js).
+
+// Brand
+$indigo: #4f46e5;
+$purple: #7c3aed;
+$primary: $indigo;
+$success: #059669;
+$danger: #dc2626;
+$warning: #d97706;
+$info: #0284c7;
+
+$brand-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+
+// Neutrals (slate)
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-300: #cbd5e1;
+$gray-400: #94a3b8;
+$gray-500: #64748b;
+$gray-600: #475569;
+$gray-700: #334155;
+$gray-800: #1e293b;
+$gray-900: #0f172a;
+
 // Body
-$body-bg: #f7f9fb;
+$body-bg: #f8fafc;
+$body-color: #0f172a;
+$body-secondary-color: #475569;
+$body-bg-dark: #0b1020;
+$body-color-dark: #e2e8f0;
+$body-secondary-color-dark: #94a3b8;
+$body-tertiary-bg-dark: #111831;
+$body-secondary-bg-dark: #151d3a;
+$border-color-dark: rgba(148, 163, 184, .18);
+$primary-text-emphasis-dark: #a5b4fc;
+$link-color-dark: #a5b4fc;
+$link-hover-color-dark: #c7d2fe;
+
+// Typography
+$font-family-sans-serif: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.6;
+$headings-font-weight: 700;
+$headings-line-height: 1.15;
+$headings-color: inherit;
+$font-weight-semibold: 600;
 
 // Links
 $link-decoration: none;
 $link-hover-decoration: underline;
 
+// Shape
+$border-radius: .625rem;
+$border-radius-sm: .5rem;
+$border-radius-lg: .875rem;
+$border-radius-xl: 1.25rem;
+$border-color: #e2e8f0;
+
 // Cards
-$card-cap-bg: #fbfbfb;
-$card-border-color: #e8eced;
+$card-border-color: $border-color;
+$card-border-radius: 1rem;
+$card-cap-bg: transparent;
+$card-spacer-y: 1.5rem;
+$card-spacer-x: 1.5rem;
 
-// Borders
-$border-radius: .125rem;
-$border-radius-lg: .2rem;
-$border-radius-sm: .15rem;
+// Controls: 48px tall inputs and buttons (touch targets, Fitts's law)
+$input-btn-padding-y: .75rem;
+$input-btn-padding-x: 1.125rem;
+$input-btn-font-size: 1rem;
+$input-btn-line-height: 1.5;
+$input-btn-focus-width: .25rem;
+$input-btn-focus-color-opacity: .35;
+$btn-font-weight: 600;
+$input-padding-y: .75rem;
+$input-padding-x: 1rem;
+$input-border-color: #cbd5e1;
+$input-placeholder-color: #94a3b8;
+$form-label-font-weight: 600;
+$form-label-margin-bottom: .375rem;
+$form-check-input-width: 1.25em;
 
-// Nav Pills
-$nav-pills-border-radius: 0;
+// Nav pills
+$nav-pills-border-radius: .625rem;
+
+// Dropdowns
+$dropdown-border-radius: .75rem;
+$dropdown-padding-y: .375rem;
+$dropdown-item-padding-y: .625rem;

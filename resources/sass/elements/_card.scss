@@ -1,3 +1,11 @@
 .card {
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  background-color: var(--app-surface);
+  border-color: var(--app-border);
+  box-shadow: var(--app-shadow);
+}
+
+.card-header {
+  border-bottom-color: var(--app-border);
+  padding-top: 1.125rem;
+  padding-bottom: 1.125rem;
 }

@@ -1,8 +1,13 @@
 <template>
-  <button v-if="config.githubAuth" class="btn btn-dark ms-auto" type="button" @click="login">
-    {{ $t('login_with') }}
-    <Fa :icon="['fab', 'github']" />
-  </button>
+  <template v-if="config.githubAuth">
+    <div class="auth-divider" role="separator">
+      <span>{{ $t('hero_or') }}</span>
+    </div>
+    <button class="btn btn-outline-app w-100" type="button" @click="login">
+      <Fa :icon="['fab', 'github']" aria-hidden="true" />
+      {{ $t('login_with') }} GitHub
+    </button>
+  </template>
 </template>
 
 <script setup>

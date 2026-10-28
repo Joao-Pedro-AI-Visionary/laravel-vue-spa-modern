@@ -1,24 +1,26 @@
 <template>
-  <div class="row">
-    <div class="col-lg-7 m-auto">
-      <Card :title="$t('reset_password')">
-        <form novalidate @submit.prevent="reset" @keydown="form.onKeydown($event)">
-          <AlertSuccess :form="form" :message="status" />
-
-          <FormRow v-model="form.email" name="email" type="email" autocomplete="email" readonly :label="$t('email')" :error="form.get('email')" />
-          <FormRow v-model="form.password" name="password" type="password" autocomplete="new-password" :label="$t('password')" :error="form.get('password')" />
-          <FormRow v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" :label="$t('confirm_password')" :error="form.get('password_confirmation')" />
-
-          <div class="mb-3 row">
-            <div class="col-md-9 ms-md-auto">
-              <VButton :loading="form.busy">
-                {{ $t('reset_password') }}
-              </VButton>
-            </div>
-          </div>
-        </form>
-      </Card>
+  <div class="auth-card">
+    <div class="auth-card__head">
+      <h1>{{ $t('reset_password') }}</h1>
+      <p>{{ $t('new_password_subtitle') }}</p>
     </div>
+
+    <form novalidate @submit.prevent="reset" @keydown="form.onKeydown($event)">
+      <AlertSuccess :form="form" :message="status" />
+
+      <FormRow v-model="form.email" name="email" type="email" autocomplete="email" readonly :label="$t('email')" :error="form.get('email')" />
+      <FormRow v-model="form.password" name="password" type="password" autocomplete="new-password" :label="$t('password')" :hint="$t('password_hint')" :error="form.get('password')" />
+      <FormRow v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" :label="$t('confirm_password')" :error="form.get('password_confirmation')" />
+
+      <VButton :loading="form.busy" block class="mt-2">
+        {{ $t('reset_password') }}
+      </VButton>
+    </form>
+
+    <RouterLink :to="{ name: 'login' }" class="auth-card__back">
+      <Fa icon="arrow-left" aria-hidden="true" />
+      {{ $t('back_to_login') }}
+    </RouterLink>
   </div>
 </template>
 

@@ -1,30 +1,32 @@
 <template>
-  <div class="row">
-    <div class="col-lg-7 m-auto">
-      <Card v-if="mustVerifyEmail" :title="$t('register')">
-        <div class="alert alert-success" role="status">
-          {{ $t('verify_email_address') }}
-        </div>
-      </Card>
-      <Card v-else :title="$t('register')">
-        <form novalidate @submit.prevent="register" @keydown="form.onKeydown($event)">
-          <FormRow v-model="form.name" name="name" autocomplete="name" :label="$t('name')" :error="form.get('name')" />
-          <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
-          <FormRow v-model="form.password" name="password" type="password" autocomplete="new-password" :label="$t('password')" :error="form.get('password')" />
-          <FormRow v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" :label="$t('confirm_password')" :error="form.get('password_confirmation')" />
-
-          <div class="mb-3 row">
-            <div class="col-md-7 offset-md-3 d-flex flex-wrap gap-2">
-              <VButton :loading="form.busy">
-                {{ $t('register') }}
-              </VButton>
-
-              <LoginWithGithub />
-            </div>
-          </div>
-        </form>
-      </Card>
+  <div class="auth-card">
+    <div class="auth-card__head">
+      <h1>{{ $t('register_title') }}</h1>
+      <p>{{ $t('register_subtitle') }}</p>
     </div>
+
+    <div v-if="mustVerifyEmail" class="alert alert-success d-flex gap-2" role="status">
+      <Fa icon="envelope" class="mt-1" aria-hidden="true" />
+      <span>{{ $t('verify_email_address') }}</span>
+    </div>
+
+    <form v-else novalidate @submit.prevent="register" @keydown="form.onKeydown($event)">
+      <FormRow v-model="form.name" name="name" autocomplete="name" :label="$t('name')" :error="form.get('name')" />
+      <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
+      <FormRow v-model="form.password" name="password" type="password" autocomplete="new-password" :label="$t('password')" :hint="$t('password_hint')" :error="form.get('password')" />
+      <FormRow v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" :label="$t('confirm_password')" :error="form.get('password_confirmation')" />
+
+      <VButton :loading="form.busy" block class="mt-2">
+        {{ $t('register') }}
+      </VButton>
+
+      <LoginWithGithub />
+    </form>
+
+    <p class="auth-card__switch">
+      {{ $t('have_account') }}
+      <RouterLink :to="{ name: 'login' }">{{ $t('login') }}</RouterLink>
+    </p>
   </div>
 </template>
 

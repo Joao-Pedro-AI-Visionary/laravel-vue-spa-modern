@@ -1,30 +1,33 @@
 <template>
-  <div class="row">
-    <div class="col-lg-7 m-auto">
-      <Card :title="$t('verify_email')">
-        <div v-if="loading" class="placeholder-glow" role="status" aria-live="polite">
-          <span class="placeholder col-8" />
-        </div>
-        <template v-else-if="success">
-          <div class="alert alert-success" role="status">
-            {{ success }}
-          </div>
-
-          <RouterLink :to="{ name: 'login' }" class="btn btn-primary">
-            {{ $t('login') }}
-          </RouterLink>
-        </template>
-        <template v-else>
-          <div class="alert alert-danger" role="alert">
-            {{ error || $t('failed_to_verify_email') }}
-          </div>
-
-          <RouterLink :to="{ name: 'verification.resend' }" class="small float-end">
-            {{ $t('resend_verification_link') }}
-          </RouterLink>
-        </template>
-      </Card>
+  <div class="auth-card">
+    <div class="auth-card__head">
+      <h1>{{ $t('verify_email') }}</h1>
+      <p>{{ $t('verify_subtitle') }}</p>
     </div>
+
+    <div v-if="loading" class="placeholder-glow" role="status" aria-live="polite">
+      <span class="placeholder col-8 rounded" />
+    </div>
+    <template v-else-if="success">
+      <div class="alert alert-success d-flex gap-2" role="status">
+        <Fa icon="circle-check" class="mt-1" aria-hidden="true" />
+        <span>{{ success }}</span>
+      </div>
+
+      <RouterLink :to="{ name: 'login' }" class="btn btn-primary w-100">
+        {{ $t('login') }}
+      </RouterLink>
+    </template>
+    <template v-else>
+      <div class="alert alert-danger d-flex gap-2" role="alert">
+        <Fa icon="circle-exclamation" class="mt-1" aria-hidden="true" />
+        <span>{{ error || $t('failed_to_verify_email') }}</span>
+      </div>
+
+      <RouterLink :to="{ name: 'verification.resend' }" class="auth-card__back">
+        {{ $t('resend_verification_link') }}
+      </RouterLink>
+    </template>
   </div>
 </template>
 

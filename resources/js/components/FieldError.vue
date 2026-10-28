@@ -1,6 +1,7 @@
 <template>
-  <div v-if="form.has(field)" :id="id || `${field}-error`" class="invalid-feedback d-block" role="alert">
-    {{ form.get(field) }}
+  <div v-if="form.has(field)" :id="id || `${field}-error`" class="field-error" role="alert">
+    <Fa icon="circle-exclamation" class="mt-1" aria-hidden="true" />
+    <span>{{ form.get(field) }}</span>
   </div>
 </template>
 

@@ -31,7 +31,7 @@ export default [
     }
   },
   {
-    files: ['*.config.js', 'tests/e2e/**/*.js', 'resources/js/__tests__/**/*.js'],
+    files: ['*.config.js', 'scripts/**/*.mjs', 'tests/e2e/**/*.js', 'resources/js/__tests__/**/*.js'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } }
   }
 ]

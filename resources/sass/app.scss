@@ -4,9 +4,12 @@
 @import 'sweetalert2/dist/sweetalert2';
 @import '@fortawesome/fontawesome-svg-core/styles';
 
+@import 'elements/base';
 @import 'elements/card';
 @import 'elements/navbar';
 @import 'elements/buttons';
+@import 'elements/forms';
 @import 'elements/transitions';
 
+@import 'components/auth';
 @import 'components/server-error';

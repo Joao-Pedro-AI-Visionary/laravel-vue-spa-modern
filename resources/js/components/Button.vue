@@ -11,6 +11,7 @@
     }"
     class="btn"
   >
+    <span v-if="loading" class="btn-spinner" aria-hidden="true" />
     <slot />
   </button>
 </template>

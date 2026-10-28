@@ -1,0 +1,80 @@
+// Shared by every page rendered in layouts/auth.vue.
+.auth-card__head {
+  margin-bottom: 1.75rem;
+
+  h1 {
+    font-size: clamp(1.75rem, 6vw, 2.125rem);
+    font-weight: 800;
+    margin-bottom: .5rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--app-muted);
+    font-size: 1.0625rem;
+  }
+}
+
+.auth-card__switch {
+  margin: 1.75rem 0 0;
+  text-align: center;
+  color: var(--app-muted);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 600;
+  }
+}
+
+.auth-card__back {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: .875rem;
+  margin: 1.25rem 0;
+  color: var(--app-muted);
+  font-size: .875rem;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--app-border);
+  }
+}
+
+.demo-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+  padding: .75rem .75rem .75rem 1rem;
+  border: 1px dashed var(--app-accent-ring);
+  border-radius: .875rem;
+  background: var(--app-accent-soft);
+  font-size: .9375rem;
+}
+
+.demo-hint__text {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  color: var(--app-heading);
+
+  .svg-inline--fa {
+    color: var(--app-accent);
+  }
+}

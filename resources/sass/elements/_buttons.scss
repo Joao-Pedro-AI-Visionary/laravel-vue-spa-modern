@@ -1,25 +1,128 @@
-.btn-loading {
-  position: relative;
-  pointer-events: none;
-  color: transparent !important;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 48px;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease, color .15s ease;
+}
 
-  &:after {
-    animation: spinAround 500ms infinite linear;
-    border: 2px solid #dbdbdb;
-    border-radius: 50%;
-    border-right-color: transparent;
-    border-top-color: transparent;
-    content: "";
-    display: block;
-    height: 1em;
-    width: 1em;
-    position: absolute;
-    left: calc(50% - (1em / 2));
-    top: calc(50% - (1em / 2));
+.btn-sm {
+  min-height: 48px;
+}
+
+.btn-lg {
+  min-height: 56px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+// Primary call to action: the only gradient element on a screen (Von Restorff).
+.btn-primary {
+  --bs-btn-bg: #4f46e5;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-bg: #4338ca;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-bg: #3730a3;
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-bg: #4f46e5;
+  --bs-btn-disabled-border-color: transparent;
+  --bs-btn-disabled-opacity: .75;
+  background-image: $brand-gradient;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .1), 0 8px 20px -8px rgba(79, 70, 229, .55);
+
+  &:hover {
+    background-image: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    transform: translateY(-1px);
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-ghost {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--app-accent-soft);
+  --bs-btn-active-bg: var(--app-accent-soft);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-border-color: transparent;
+}
+
+.btn-outline-app {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-border-color: var(--app-input-border);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--app-accent-soft);
+  --bs-btn-hover-border-color: var(--app-accent-ring);
+  --bs-btn-active-bg: var(--app-accent-soft);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-border-color: var(--app-accent-ring);
+  background-color: var(--app-surface);
+}
+
+// Strong but neutral secondary action (navbar Register), so the gradient stays unique.
+.btn-contrast {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #0f172a;
+  --bs-btn-border-color: #0f172a;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #1e293b;
+  --bs-btn-hover-border-color: #1e293b;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #334155;
+  --bs-btn-active-border-color: #334155;
+}
+
+[data-bs-theme='dark'] .btn-contrast {
+  --bs-btn-color: #0f172a;
+  --bs-btn-bg: #f8fafc;
+  --bs-btn-border-color: #f8fafc;
+  --bs-btn-hover-color: #0f172a;
+  --bs-btn-hover-bg: #e2e8f0;
+  --bs-btn-hover-border-color: #e2e8f0;
+  --bs-btn-active-color: #0f172a;
+  --bs-btn-active-bg: #cbd5e1;
+  --bs-btn-active-border-color: #cbd5e1;
+}
+
+.btn-icon {
+  width: 48px;
+  min-height: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: .75rem;
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 .25rem var(--app-accent-ring);
+}
+
+// Loading state: spinner next to the label (Doherty threshold feedback).
+.btn-loading {
+  pointer-events: none;
+}
+
+.btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinAround .6s linear infinite;
+  flex: none;
 }
 
 @keyframes spinAround {
   from { transform: rotate(0deg); }
-  to { transform: rotate(359deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary:hover {
+    transform: none;
+  }
 }

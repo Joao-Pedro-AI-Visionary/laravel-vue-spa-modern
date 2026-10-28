@@ -18,7 +18,7 @@ import { progress } from '~/lib/progress.js'
   left: 0;
   height: 3px;
   width: 0;
-  background-color: #0d6efd;
+  background-image: linear-gradient(90deg, #4f46e5, #7c3aed);
   transition: width 0.2s, opacity 0.4s;
   z-index: 1090;
   pointer-events: none;

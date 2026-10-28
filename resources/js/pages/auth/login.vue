@@ -1,46 +1,48 @@
 <template>
-  <div class="row">
-    <div class="col-lg-7 m-auto">
-      <Card :title="$t('login')">
-        <div v-if="route.query.expired" class="alert alert-warning" role="alert">
-          {{ $t('token_expired_alert_text') }}
-        </div>
-
-        <div v-if="DEMO_MODE" class="alert alert-info d-flex flex-wrap align-items-center gap-2" data-testid="demo-hint">
-          <span class="flex-grow-1">{{ $t('demo_hint', { email: DEMO_EMAIL, password: DEMO_PASSWORD }) }}</span>
-          <button type="button" class="btn btn-outline-primary btn-sm" @click="useDemo">
-            {{ $t('use_demo_account') }}
-          </button>
-        </div>
-
-        <form novalidate @submit.prevent="login" @keydown="form.onKeydown($event)">
-          <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
-          <FormRow v-model="form.password" name="password" type="password" autocomplete="current-password" :label="$t('password')" :error="form.get('password')" />
-
-          <div class="mb-3 row">
-            <div class="col-md-7 offset-md-3 d-flex flex-wrap align-items-center gap-2">
-              <Checkbox v-model="remember" name="remember">
-                {{ $t('remember_me') }}
-              </Checkbox>
-
-              <RouterLink :to="{ name: 'password.request' }" class="small ms-auto">
-                {{ $t('forgot_password') }}
-              </RouterLink>
-            </div>
-          </div>
-
-          <div class="mb-3 row">
-            <div class="col-md-7 offset-md-3 d-flex flex-wrap gap-2">
-              <VButton :loading="form.busy">
-                {{ $t('login') }}
-              </VButton>
-
-              <LoginWithGithub />
-            </div>
-          </div>
-        </form>
-      </Card>
+  <div class="auth-card">
+    <div class="auth-card__head">
+      <h1>{{ $t('login_title') }}</h1>
+      <p>{{ $t('login_subtitle') }}</p>
     </div>
+
+    <div v-if="route.query.expired" class="alert alert-warning d-flex gap-2" role="alert">
+      <Fa icon="circle-exclamation" class="mt-1" aria-hidden="true" />
+      <span>{{ $t('token_expired_alert_text') }}</span>
+    </div>
+
+    <div v-if="DEMO_MODE" class="demo-hint" data-testid="demo-hint">
+      <div class="demo-hint__text">
+        <Fa icon="key" aria-hidden="true" />
+        <span>{{ $t('demo_hint', { email: DEMO_EMAIL, password: DEMO_PASSWORD }) }}</span>
+      </div>
+      <button type="button" class="btn btn-outline-app" @click="useDemo">
+        {{ $t('use_demo_account') }}
+      </button>
+    </div>
+
+    <form novalidate @submit.prevent="login" @keydown="form.onKeydown($event)">
+      <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
+      <FormRow v-model="form.password" name="password" type="password" autocomplete="current-password" :label="$t('password')" :error="form.get('password')">
+        <template #aside>
+          <RouterLink :to="{ name: 'password.request' }">{{ $t('forgot_password') }}</RouterLink>
+        </template>
+      </FormRow>
+
+      <Checkbox v-model="remember" name="remember" class="mb-3">
+        {{ $t('remember_me') }}
+      </Checkbox>
+
+      <VButton :loading="form.busy" block>
+        {{ $t('login') }}
+      </VButton>
+
+      <LoginWithGithub />
+    </form>
+
+    <p class="auth-card__switch">
+      {{ $t('no_account') }}
+      <RouterLink :to="{ name: 'register' }">{{ $t('cta_create_account') }}</RouterLink>
+    </p>
   </div>
 </template>
 
@@ -68,6 +70,9 @@ function useDemo () {
   form.password = DEMO_PASSWORD
   form.clear()
 }
+
+// "Try the live demo" on the landing page links here with ?demo=1.
+if (DEMO_MODE && route.query.demo) useDemo()
 
 async function login () {
   let response

@@ -1,6 +1,7 @@
 <template>
-  <div v-if="form.successful && message" class="alert alert-success alert-dismissible" role="status">
-    {{ message }}
+  <div v-if="form.successful && message" class="alert alert-success alert-dismissible d-flex align-items-center gap-2" role="status">
+    <Fa icon="circle-check" aria-hidden="true" />
+    <span>{{ message }}</span>
     <button type="button" class="btn-close" :aria-label="$t('dismiss')" @click="form.dismissSuccess()" />
   </div>
 </template>

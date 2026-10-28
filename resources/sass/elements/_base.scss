@@ -1,0 +1,132 @@
+// App-level surface tokens shared by every screen (light and dark).
+:root,
+[data-bs-theme='light'] {
+  --app-surface: #fff;
+  --app-surface-2: #f1f5f9;
+  --app-border: #e2e8f0;
+  --app-input-border: #cbd5e1;
+  --app-input-bg: #fff;
+  --app-muted: #475569;
+  --app-heading: #0f172a;
+  --app-accent: #4f46e5;
+  --app-accent-soft: rgba(79, 70, 229, .08);
+  --app-accent-ring: rgba(79, 70, 229, .35);
+  --app-glow-1: rgba(99, 102, 241, .16);
+  --app-glow-2: rgba(168, 85, 247, .12);
+  --app-grid-line: rgba(15, 23, 42, .045);
+  --app-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 8px 24px -12px rgba(15, 23, 42, .12);
+  --app-shadow-lg: 0 24px 64px -24px rgba(30, 27, 75, .35);
+  --app-header-bg: rgba(248, 250, 252, .82);
+  --app-gradient: #{$brand-gradient};
+  color-scheme: light;
+}
+
+[data-bs-theme='dark'] {
+  --app-surface: #111831;
+  --app-surface-2: #0e1530;
+  --app-border: rgba(148, 163, 184, .16);
+  --app-input-border: rgba(148, 163, 184, .3);
+  --app-input-bg: #0b1226;
+  --app-muted: #94a3b8;
+  --app-heading: #f8fafc;
+  --app-accent: #a5b4fc;
+  --app-accent-soft: rgba(129, 140, 248, .12);
+  --app-accent-ring: rgba(165, 180, 252, .45);
+  --app-glow-1: rgba(99, 102, 241, .26);
+  --app-glow-2: rgba(168, 85, 247, .18);
+  --app-grid-line: rgba(148, 163, 184, .06);
+  --app-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 12px 32px -16px rgba(0, 0, 0, .6);
+  --app-shadow-lg: 0 32px 80px -24px rgba(0, 0, 0, .7);
+  --app-header-bg: rgba(11, 16, 32, .78);
+  color-scheme: dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4,
+.h1, .h2, .h3, .h4 {
+  letter-spacing: -.025em;
+  color: var(--app-heading);
+}
+
+.text-muted-app {
+  color: var(--app-muted) !important;
+}
+
+.text-gradient {
+  background-image: var(--app-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+[data-bs-theme='dark'] .text-gradient {
+  background-image: linear-gradient(135deg, #a5b4fc 0%, #d8b4fe 100%);
+}
+
+// Visible, consistent keyboard focus everywhere.
+:focus-visible {
+  outline: 3px solid var(--app-accent-ring);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-check-input:focus-visible {
+  outline: none;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: .8125rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--app-accent);
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    margin-bottom: .375rem;
+  }
+
+  p {
+    color: var(--app-muted);
+    margin: 0;
+  }
+}
+
+.icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: .75rem;
+  color: var(--app-accent);
+  background: var(--app-accent-soft);
+  font-size: 1.125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

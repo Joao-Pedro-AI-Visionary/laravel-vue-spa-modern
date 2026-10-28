@@ -1,22 +1,24 @@
 <template>
-  <div class="row">
-    <div class="col-lg-7 m-auto">
-      <Card :title="$t('verify_email')">
-        <form novalidate @submit.prevent="send" @keydown="form.onKeydown($event)">
-          <AlertSuccess :form="form" :message="status" />
-
-          <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
-
-          <div class="mb-3 row">
-            <div class="col-md-9 ms-md-auto">
-              <VButton :loading="form.busy">
-                {{ $t('send_verification_link') }}
-              </VButton>
-            </div>
-          </div>
-        </form>
-      </Card>
+  <div class="auth-card">
+    <div class="auth-card__head">
+      <h1>{{ $t('verify_email') }}</h1>
+      <p>{{ $t('verify_subtitle') }}</p>
     </div>
+
+    <form novalidate @submit.prevent="send" @keydown="form.onKeydown($event)">
+      <AlertSuccess :form="form" :message="status" />
+
+      <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
+
+      <VButton :loading="form.busy" block>
+        {{ $t('send_verification_link') }}
+      </VButton>
+    </form>
+
+    <RouterLink :to="{ name: 'login' }" class="auth-card__back">
+      <Fa icon="arrow-left" aria-hidden="true" />
+      {{ $t('back_to_login') }}
+    </RouterLink>
   </div>
 </template>
 

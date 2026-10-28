@@ -49,7 +49,7 @@ const MESSAGES = {
 
 function avatar (name) {
   const initial = (String(name || '?').trim()[0] || '?').toUpperCase()
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="#0d6efd"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="sans-serif" font-size="30" fill="#fff">${initial.replace(/[<>&"']/g, '')}</text></svg>`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="28" fill="#fff">${initial.replace(/[<>&"']/g, '')}</text></svg>`
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 }
 

@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -13,11 +14,11 @@ abstract class TestCase extends BaseTestCase
     /**
      * Log in through the real endpoint and return the issued JWT.
      */
-    protected function loginAndGetToken(User $user, string $password = 'password'): string
+    protected function loginAndGetToken(User $user, ?string $password = null): string
     {
         return $this->postJson('/api/login', [
             'email' => $user->email,
-            'password' => $password,
+            'password' => $password ?? UserFactory::plainPassword(),
         ])->assertOk()->json('token');
     }
 

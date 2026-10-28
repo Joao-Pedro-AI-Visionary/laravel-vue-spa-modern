@@ -14,6 +14,12 @@ function memoryStorage () {
 
 let storage, clock, http
 
+// Fixture passwords are generated per run (min 8 characters, like Laravel).
+const randomPassword = () => `pw-${crypto.randomUUID()}`
+const PASSWORD = randomPassword()
+const NEW_PASSWORD = randomPassword()
+const RESET_PASSWORD = randomPassword()
+
 const bearer = token => ({ headers: { Authorization: `Bearer ${token}` } })
 const status = p => p.then(r => r.status, e => (e.response ? e.response.status : e.code))
 const body = p => p.then(r => r.data, e => e.response.data)
@@ -22,13 +28,13 @@ async function register (data = {}) {
   return http.post('/api/register', {
     name: 'Ann',
     email: 'ann@example.com',
-    password: 'secret123',
-    password_confirmation: 'secret123',
+    password: PASSWORD,
+    password_confirmation: PASSWORD,
     ...data
   })
 }
 
-async function login (email = 'ann@example.com', password = 'secret123') {
+async function login (email = 'ann@example.com', password = PASSWORD) {
   return (await http.post('/api/login', { email, password })).data.token
 }
 
@@ -160,10 +166,10 @@ describe('mock API: settings', () => {
 
   it('changes the password: old one stops working, new one logs in', async () => {
     expect(await status(http.patch('/api/settings/password', { password: 'short', password_confirmation: 'short' }, bearer(token)))).toBe(422)
-    expect(await status(http.patch('/api/settings/password', { password: 'newpass123', password_confirmation: 'nope' }, bearer(token)))).toBe(422)
-    expect(await status(http.patch('/api/settings/password', { password: 'newpass123', password_confirmation: 'newpass123' }, bearer(token)))).toBe(204)
-    expect(await status(http.post('/api/login', { email: 'ann@example.com', password: 'secret123' }))).toBe(422)
-    expect(await login('ann@example.com', 'newpass123')).toMatch(/^demo\./)
+    expect(await status(http.patch('/api/settings/password', { password: NEW_PASSWORD, password_confirmation: 'nope' }, bearer(token)))).toBe(422)
+    expect(await status(http.patch('/api/settings/password', { password: NEW_PASSWORD, password_confirmation: NEW_PASSWORD }, bearer(token)))).toBe(204)
+    expect(await status(http.post('/api/login', { email: 'ann@example.com', password: PASSWORD }))).toBe(422)
+    expect(await login('ann@example.com', NEW_PASSWORD)).toMatch(/^demo\./)
   })
 })
 
@@ -176,8 +182,8 @@ describe('mock API: password reset and verification', () => {
   })
 
   it('password reset sets a new password', async () => {
-    await http.post('/api/password/reset', { email: 'ann@example.com', password: 'reset1234', password_confirmation: 'reset1234', token: 't' })
-    expect(await login('ann@example.com', 'reset1234')).toBeTruthy()
+    await http.post('/api/password/reset', { email: 'ann@example.com', password: RESET_PASSWORD, password_confirmation: RESET_PASSWORD, token: 't' })
+    expect(await login('ann@example.com', RESET_PASSWORD)).toBeTruthy()
   })
 
   it('verify marks the email as verified; unknown id is 400', async () => {

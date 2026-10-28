@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Factories\UserFactory;
 use App\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -97,7 +98,7 @@ class PasswordResetTest extends TestCase
             ->assertStatus(400)
             ->assertJson(['email' => trans('passwords.token')]);
 
-        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+        $this->assertTrue(Hash::check(UserFactory::plainPassword(), $user->fresh()->password));
     }
 
     #[Test]

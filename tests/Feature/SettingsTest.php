@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -100,7 +101,7 @@ class SettingsTest extends TestCase
             ->assertStatus(422)
             ->assertJsonValidationErrors(['password']);
 
-        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+        $this->assertTrue(Hash::check(UserFactory::plainPassword(), $user->fresh()->password));
     }
 
     #[Test]

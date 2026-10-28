@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Factories\UserFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Fixtures\VerifiableUser;
 use Tests\TestCase;
@@ -16,7 +17,7 @@ class LoginTest extends TestCase
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
-            'password' => 'password',
+            'password' => UserFactory::plainPassword(),
         ])
             ->assertOk()
             ->assertJsonStructure(['token', 'token_type', 'expires_in'])
@@ -59,7 +60,7 @@ class LoginTest extends TestCase
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
-            'password' => 'password',
+            'password' => UserFactory::plainPassword(),
         ])
             ->assertStatus(422)
             ->assertJsonValidationErrors(['email'])
@@ -77,7 +78,7 @@ class LoginTest extends TestCase
 
         $this->postJson('/api/login', [
             'email' => $user->email,
-            'password' => 'password',
+            'password' => UserFactory::plainPassword(),
         ])->assertOk()->assertJsonStructure(['token']);
     }
 
@@ -91,7 +92,7 @@ class LoginTest extends TestCase
                 ->assertStatus(422);
         }
 
-        $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
+        $this->postJson('/api/login', ['email' => $user->email, 'password' => UserFactory::plainPassword()])
             ->assertStatus(429)
             ->assertJsonValidationErrors(['email']);
     }
@@ -189,7 +190,7 @@ class LoginTest extends TestCase
         $this->forgetGuards();
 
         $this->withToken($token)
-            ->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
+            ->postJson('/api/login', ['email' => $user->email, 'password' => UserFactory::plainPassword()])
             ->assertStatus(400)
             ->assertJson(['error' => 'Already authenticated.']);
     }

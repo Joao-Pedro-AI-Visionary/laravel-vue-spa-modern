@@ -35,9 +35,12 @@ export function routeMiddleware (to) {
   })
 }
 
-/** Only allow same-app relative redirects (no open redirect via ?redirect=). */
+/**
+ * Only allow same-app relative redirects (no open redirect via ?redirect=).
+ * Browsers normalize "\" to "/" in URLs, so "/\evil.com" means "//evil.com".
+ */
 export function safeRedirect (value) {
-  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : null
+  return typeof value === 'string' && /^\/(?![/\\])/.test(value) ? value : null
 }
 
 /**

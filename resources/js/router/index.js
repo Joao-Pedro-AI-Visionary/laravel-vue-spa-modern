@@ -11,9 +11,13 @@ function scrollBehavior (to, from, savedPosition) {
 }
 
 /**
+ * App routes always live at the site root. Do not use import.meta.env.BASE_URL
+ * here: in the Laravel build it is the asset base ("/build/"), which would turn
+ * every link into /build/home, /build/login, ...
+ *
  * @param {{ auth: object, lang: object, loadMessages: Function, history?: object }} deps
  */
-export function createAppRouter ({ auth, lang, loadMessages, history = createWebHistory(import.meta.env.BASE_URL) }) {
+export function createAppRouter ({ auth, lang, loadMessages, history = createWebHistory('/') }) {
   const router = createRouter({ history, routes, scrollBehavior })
 
   router.beforeEach(() => { startProgress() })

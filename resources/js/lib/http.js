@@ -54,6 +54,8 @@ export function installInterceptors (instance, hooks) {
     if (token) {
       config.headers.set('Authorization', `Bearer ${token}`)
     }
+    // Remember which token this request carried, to detect rotations below.
+    config._sentToken = token || null
 
     const locale = hooks.getLocale && hooks.getLocale()
     if (locale) {
@@ -75,11 +77,22 @@ export function installInterceptors (instance, hooks) {
     ) {
       config._retried = true
 
-      try {
-        await hooks.refresh()
-      } catch {
-        hooks.onAuthFailure()
-        throw error
+      // The token was already rotated (by a concurrent request or another
+      // tab) after this request was sent: just retry with the current one.
+      const rotated = config._sentToken && config._sentToken !== hooks.getToken()
+
+      if (!rotated) {
+        try {
+          await hooks.refresh()
+        } catch (refreshError) {
+          // Only a genuine 401 from /api/refresh ends the session. Network
+          // errors, aborts, 5xx and other 4xx (429 throttling, ...) say
+          // nothing about the session: keep the token and surface that
+          // error so callers do not treat it as a 401 (#329).
+          if (!isUnauthorized(refreshError)) throw refreshError
+          hooks.onAuthFailure()
+          throw error
+        }
       }
 
       // Retry the original request with the refreshed token.

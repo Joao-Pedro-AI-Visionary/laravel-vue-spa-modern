@@ -1,5 +1,5 @@
 <template>
-  <a class="skip-link" href="#main-content">{{ $t('skip_to_content') }}</a>
+  <a class="skip-link visually-hidden-focusable" href="#main-content">{{ $t('skip_to_content') }}</a>
   <DemoBanner v-if="DEMO_MODE" />
   <Loading />
   <Transition name="page" mode="out-in">

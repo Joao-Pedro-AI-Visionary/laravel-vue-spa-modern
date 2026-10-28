@@ -42,8 +42,18 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    /** Single-flight POST /api/refresh: concurrent 401s share one call. */
+    /**
+     * Single-flight POST /api/refresh: concurrent 401s share one call.
+     * If another tab already rotated the shared (remembered) token, adopt it
+     * instead of refreshing a token that is now blacklisted.
+     */
     refresh () {
+      const stored = tokenStorage.get()
+      if (stored && stored !== this.token) {
+        this.token = stored
+        return Promise.resolve(stored)
+      }
+
       if (!refreshPromise) {
         refreshPromise = http
           .post('/api/refresh', null, { skipAuthRefresh: true })

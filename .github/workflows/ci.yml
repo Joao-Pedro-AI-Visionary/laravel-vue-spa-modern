@@ -1,0 +1,157 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    name: PHP 8.3 (PHPUnit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, mbstring, pdo, sqlite, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
+
+  node:
+    name: Node 24 (lint, Vitest, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:unit
+      - run: npm run build
+      - run: npm run build:demo
+
+  e2e-demo:
+    name: E2E (Playwright, demo mode)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests (builds and serves the demo itself)
+        run: npm run test:e2e
+        env:
+          E2E_TARGET: demo
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  e2e-laravel:
+    name: E2E (Playwright, real Laravel API)
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: local
+      APP_DEBUG: 'false'
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ${{ github.workspace }}/database/e2e.sqlite
+      MAIL_MAILER: log
+      CACHE_STORE: file
+      SESSION_DRIVER: array
+      PHP_CLI_SERVER_WORKERS: '4'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, mbstring, pdo, sqlite, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - run: npm ci
+      - run: npm run build
+
+      - name: Start the Laravel API with throwaway secrets
+        run: |
+          echo "APP_KEY=base64:$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+          echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
+      - name: Migrate and serve
+        run: |
+          touch "$DB_DATABASE"
+          php artisan migrate --force
+          nohup php artisan serve --host=127.0.0.1 --port=8000 > storage/logs/serve.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/up > /dev/null && exit 0; sleep 1; done
+          cat storage/logs/serve.log; exit 1
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests against Laravel
+        run: npm run test:e2e
+        env:
+          E2E_TARGET: laravel
+          E2E_BASE_URL: http://127.0.0.1:8000
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-laravel
+          path: |
+            playwright-report/
+            test-results/
+            storage/logs/
+          retention-days: 7

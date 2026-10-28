@@ -1,0 +1,48 @@
+# VCS and tooling
+.git
+.github
+.idea
+.vscode
+.fleet
+.zed
+.nova
+.editorconfig
+.styleci.yml
+.phpunit.result.cache
+.phpunit.cache
+
+# Secrets and local env (configure the container through environment variables)
+.env
+.env.*
+!.env.example
+auth.json
+
+# Dependencies and build output (rebuilt inside the image)
+node_modules
+vendor
+public/build
+public/hot
+dist-demo
+.vercel
+
+# Test artifacts
+test-results
+playwright-report
+blob-report
+playwright/.cache
+coverage
+
+# Runtime state that must not leak into the image
+bootstrap/cache/*.php
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/testing/*
+!storage/**/.gitignore
+database/*.sqlite
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore

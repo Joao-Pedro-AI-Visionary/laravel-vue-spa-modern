@@ -13,9 +13,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Jobs que instalam pacotes via apt (setup-php, playwright --with-deps) rodam
+  # no runner do WSL: o host "box" não alcança deb.debian.org.
   php:
     name: PHP 8.3 (PHPUnit)
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, linux, wsl]
     steps:
       - uses: actions/checkout@v7
 
@@ -62,7 +64,7 @@ jobs:
 
   e2e-demo:
     name: E2E (Playwright, demo mode)
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, linux, wsl]
     steps:
       - uses: actions/checkout@v7
 
@@ -93,7 +95,7 @@ jobs:
 
   e2e-laravel:
     name: E2E (Playwright, real Laravel API)
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, linux, wsl]
     env:
       APP_ENV: local
       APP_DEBUG: 'false'

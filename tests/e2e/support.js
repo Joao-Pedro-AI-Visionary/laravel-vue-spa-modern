@@ -7,12 +7,15 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 
 export const TARGET = process.env.E2E_TARGET === 'laravel' ? 'laravel' : 'demo'
 
+// Screenshot label: "demo-live" when the demo suite runs against a deployed URL.
+const LABEL = TARGET === 'demo' && process.env.E2E_BASE_URL ? 'demo-live' : TARGET
+
 // Screenshots go next to the repo (../shots) unless E2E_SHOTS_DIR is set.
 const SHOTS_DIR = process.env.E2E_SHOTS_DIR || path.resolve(here, '..', '..', '..', 'shots')
 
 export async function shot (page, name) {
   fs.mkdirSync(SHOTS_DIR, { recursive: true })
-  await page.screenshot({ path: path.join(SHOTS_DIR, `laravel-vue-spa-modern-${TARGET}-${name}.png`), fullPage: true })
+  await page.screenshot({ path: path.join(SHOTS_DIR, `laravel-vue-spa-modern-${LABEL}-${name}.png`), fullPage: true })
 }
 
 export function uniqueUser (tag = 'user') {

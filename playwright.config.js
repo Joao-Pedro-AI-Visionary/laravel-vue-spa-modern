@@ -5,13 +5,14 @@ import { defineConfig, devices } from '@playwright/test'
  *   and serves it with `vite preview` on port 4173.
  * E2E_TARGET=laravel: runs against a Laravel server started externally
  *   (front built with `npm run build`); base URL from E2E_BASE_URL.
+ * E2E_TARGET=demo with E2E_BASE_URL: runs the demo suite against an already
+ *   deployed demo (for example the Vercel URL), without a local server.
  */
 const target = process.env.E2E_TARGET === 'laravel' ? 'laravel' : 'demo'
 const isCI = Boolean(process.env.CI)
 
-const baseURL = target === 'laravel'
-  ? (process.env.E2E_BASE_URL || 'http://localhost:8000')
-  : 'http://localhost:4173'
+const external = process.env.E2E_BASE_URL
+const baseURL = external || (target === 'laravel' ? 'http://localhost:8000' : 'http://localhost:4173')
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -34,7 +35,7 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } }
   ],
-  webServer: target === 'demo'
+  webServer: target === 'demo' && !external
     ? {
         command: 'npm run build:demo && npm run preview:demo',
         url: baseURL,

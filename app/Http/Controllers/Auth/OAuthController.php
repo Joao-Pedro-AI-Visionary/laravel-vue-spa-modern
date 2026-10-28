@@ -6,14 +6,12 @@ use App\Exceptions\EmailTakenException;
 use App\Http\Controllers\Controller;
 use App\Models\OAuthProvider;
 use App\Models\User;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 
 class OAuthController extends Controller
 {
-    use AuthenticatesUsers;
-
     /**
      * Create a new controller instance.
      */
@@ -51,6 +49,11 @@ class OAuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => $this->guard()->getPayload()->get('exp') - time(),
         ]);
+    }
+
+    protected function guard(): JWTGuard
+    {
+        return auth('api');
     }
 
     /**

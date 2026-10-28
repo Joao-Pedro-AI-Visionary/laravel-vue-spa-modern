@@ -3,17 +3,15 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
     /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * Set the application locale from the Accept-Language header.
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         if ($locale = $this->parseLocale($request)) {
             app()->setLocale($locale);
@@ -23,15 +21,18 @@ class SetLocale
     }
 
     /**
-     * @param  \Illuminate\Http\Request $request
-     * @return string|null
+     * Resolve a supported locale from the first Accept-Language entry.
      */
-    protected function parseLocale($request)
+    protected function parseLocale(Request $request): ?string
     {
-        $locales = config('app.locales');
+        $locales = config('app.locales', []);
 
-        $locale = $request->server('HTTP_ACCEPT_LANGUAGE');
-        $locale = substr($locale, 0, strpos($locale, ',') ?: strlen($locale));
+        $locale = (string) $request->server('HTTP_ACCEPT_LANGUAGE', '');
+        $locale = trim(substr($locale, 0, strpos($locale, ',') ?: strlen($locale)));
+
+        if ($locale === '') {
+            return null;
+        }
 
         if (array_key_exists($locale, $locales)) {
             return $locale;
@@ -41,5 +42,7 @@ class SetLocale
         if (array_key_exists($locale, $locales)) {
             return $locale;
         }
+
+        return null;
     }
 }

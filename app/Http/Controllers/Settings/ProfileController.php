@@ -14,7 +14,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $this->validate($request, [
+        $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$user->id,
         ]);

@@ -4,56 +4,37 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    use RegistersUsers;
-
     /**
-     * Create a new controller instance.
+     * Handle a registration request for the application.
      */
-    public function __construct()
+    public function register(Request $request): JsonResponse
     {
-        $this->middleware('guest');
-    }
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email:filter|max:255|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ]);
 
-    /**
-     * The user has been registered.
-     */
-    protected function registered(Request $request, User $user)
-    {
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
+        event(new Registered($user));
+
         if ($user instanceof MustVerifyEmail) {
             return response()->json(['status' => trans('verification.sent')]);
         }
 
         return response()->json($user);
-    }
-
-    /**
-     * Get a validator for an incoming registration request.
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email:filter|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-        ]);
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     */
-    protected function create(array $data): User
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
     }
 }

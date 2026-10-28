@@ -3,34 +3,43 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ResetsPasswords;
+use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 
 class ResetPasswordController extends Controller
 {
-    use ResetsPasswords;
-
     /**
-     * Create a new controller instance.
+     * Reset the given user's password.
      */
-    public function __construct()
+    public function reset(Request $request): JsonResponse
     {
-        $this->middleware('guest');
-    }
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
 
-    /**
-     * Get the response for a successful password reset.
-     */
-    protected function sendResetResponse(Request $request, string $response)
-    {
-        return ['status' => trans($response)];
-    }
+        $response = Password::broker()->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->password = Hash::make($password);
+                $user->setRememberToken(Str::random(60));
+                $user->save();
 
-    /**
-     * Get the response for a failed password reset.
-     */
-    protected function sendResetFailedResponse(Request $request, string $response)
-    {
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($response === Password::PASSWORD_RESET) {
+            return response()->json(['status' => trans($response)]);
+        }
+
         return response()->json(['email' => trans($response)], 400);
     }
 }

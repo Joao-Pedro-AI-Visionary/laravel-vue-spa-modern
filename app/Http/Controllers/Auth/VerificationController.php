@@ -12,14 +12,6 @@ use Illuminate\Validation\ValidationException;
 class VerificationController extends Controller
 {
     /**
-     * Create a new controller instance.
-     */
-    public function __construct()
-    {
-        $this->middleware('throttle:6,1')->only('verify', 'resend');
-    }
-
-    /**
      * Mark the user's email address as verified.
      */
     public function verify(Request $request, User $user)
@@ -50,7 +42,7 @@ class VerificationController extends Controller
      */
     public function resend(Request $request)
     {
-        $this->validate($request, ['email' => 'required|email']);
+        $request->validate(['email' => 'required|email']);
 
         $user = User::where('email', $request->email)->first();
 

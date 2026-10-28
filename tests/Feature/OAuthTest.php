@@ -9,6 +9,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery as m;
 use PHPUnit\Framework\Assert as PHPUnit;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class OAuthTest extends TestCase
@@ -30,8 +31,8 @@ class OAuthTest extends TestCase
         });
     }
 
-    /** @test */
-    public function redirect_to_provider()
+    #[Test]
+    public function redirect_to_provider(): void
     {
         $this->mockSocialite('github');
 
@@ -40,8 +41,8 @@ class OAuthTest extends TestCase
             ->assertJson(['url' => 'https://url-to-provider']);
     }
 
-    /** @test */
-    public function create_user_and_return_token()
+    #[Test]
+    public function create_user_and_return_token(): void
     {
         $this->mockSocialite('github', [
             'id' => '123',
@@ -71,8 +72,8 @@ class OAuthTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function update_user_and_return_token()
+    #[Test]
+    public function update_user_and_return_token(): void
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
         $user->oauthProviders()->create([
@@ -98,8 +99,8 @@ class OAuthTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function can_not_create_user_if_email_is_taken()
+    #[Test]
+    public function can_not_create_user_if_email_is_taken(): void
     {
         User::factory()->create(['email' => 'test@example.com']);
 

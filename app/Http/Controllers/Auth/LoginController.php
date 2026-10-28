@@ -4,21 +4,63 @@ namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\VerifyEmailException;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
-    use AuthenticatesUsers;
+    /**
+     * Maximum failed attempts per email + IP before the user is locked out.
+     */
+    protected int $maxAttempts = 5;
 
     /**
-     * Create a new controller instance.
+     * Lockout duration, in minutes.
      */
-    public function __construct()
+    protected int $decayMinutes = 1;
+
+    /**
+     * Handle a login request to the application.
+     */
+    public function login(Request $request): JsonResponse
     {
-        $this->middleware('guest')->except('logout');
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if (RateLimiter::tooManyAttempts($this->throttleKey($request), $this->maxAttempts)) {
+            event(new Lockout($request));
+
+            $this->sendLockoutResponse($request);
+        }
+
+        if ($this->attemptLogin($request)) {
+            RateLimiter::clear($this->throttleKey($request));
+
+            return $this->sendLoginResponse();
+        }
+
+        RateLimiter::hit($this->throttleKey($request), $this->decayMinutes * 60);
+
+        $this->sendFailedLoginResponse();
+    }
+
+    /**
+     * Log the user out of the application (invalidates the current token).
+     */
+    public function logout(): JsonResponse
+    {
+        $this->guard()->logout();
+
+        return response()->json(null, 204);
     }
 
     /**
@@ -26,7 +68,7 @@ class LoginController extends Controller
      */
     protected function attemptLogin(Request $request): bool
     {
-        $token = $this->guard()->attempt($this->credentials($request));
+        $token = $this->guard()->attempt($request->only('email', 'password'));
 
         if (! $token) {
             return false;
@@ -45,10 +87,8 @@ class LoginController extends Controller
     /**
      * Send the response after the user was authenticated.
      */
-    protected function sendLoginResponse(Request $request)
+    protected function sendLoginResponse(): JsonResponse
     {
-        $this->clearLoginAttempts($request);
-
         $token = (string) $this->guard()->getToken();
         $expiration = $this->guard()->getPayload()->get('exp');
 
@@ -60,9 +100,11 @@ class LoginController extends Controller
     }
 
     /**
-     * Get the failed login response instance.
+     * Throw the failed login response.
+     *
+     * @throws ValidationException
      */
-    protected function sendFailedLoginResponse(Request $request)
+    protected function sendFailedLoginResponse(): never
     {
         $user = $this->guard()->user();
 
@@ -71,17 +113,37 @@ class LoginController extends Controller
         }
 
         throw ValidationException::withMessages([
-            $this->username() => [trans('auth.failed')],
+            'email' => [trans('auth.failed')],
         ]);
     }
 
     /**
-     * Log the user out of the application.
+     * Throw the lockout response.
+     *
+     * @throws ValidationException
      */
-    public function logout(Request $request)
+    protected function sendLockoutResponse(Request $request): never
     {
-        $this->guard()->logout();
+        $seconds = RateLimiter::availableIn($this->throttleKey($request));
 
-        return response()->json(null, 204);
+        throw ValidationException::withMessages([
+            'email' => [trans('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ])],
+        ])->status(Response::HTTP_TOO_MANY_REQUESTS);
+    }
+
+    /**
+     * Get the rate limiting throttle key for the request.
+     */
+    protected function throttleKey(Request $request): string
+    {
+        return Str::transliterate(Str::lower((string) $request->input('email')).'|'.$request->ip());
+    }
+
+    protected function guard(): JWTGuard
+    {
+        return auth('api');
     }
 }

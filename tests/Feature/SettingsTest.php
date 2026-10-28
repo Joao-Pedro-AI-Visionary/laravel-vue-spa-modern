@@ -79,12 +79,12 @@ class SettingsTest extends TestCase
     {
         $this->actingAs($user = User::factory()->create())
             ->patchJson('/api/settings/password', [
-                'password' => 'updated',
-                'password_confirmation' => 'updated',
+                'password' => 'updated123',
+                'password_confirmation' => 'updated123',
             ])
             ->assertNoContent();
 
-        $this->assertTrue(Hash::check('updated', $user->fresh()->password));
+        $this->assertTrue(Hash::check('updated123', $user->fresh()->password));
     }
 
     #[Test]
@@ -107,8 +107,8 @@ class SettingsTest extends TestCase
     public function update_password_requires_authentication(): void
     {
         $this->patchJson('/api/settings/password', [
-            'password' => 'updated',
-            'password_confirmation' => 'updated',
+            'password' => 'updated123',
+            'password_confirmation' => 'updated123',
         ])->assertStatus(401);
     }
 }

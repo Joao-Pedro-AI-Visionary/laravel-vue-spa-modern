@@ -19,8 +19,8 @@ class RegisterTest extends TestCase
         $this->postJson('/api/register', [
             'name' => 'Test User',
             'email' => 'test@test.app',
-            'password' => 'secret',
-            'password_confirmation' => 'secret',
+            'password' => 'secret123',
+            'password_confirmation' => 'secret123',
         ])
             ->assertOk()
             ->assertJsonStructure(['id', 'name', 'email', 'photo_url'])
@@ -29,7 +29,7 @@ class RegisterTest extends TestCase
 
         $user = User::where('email', 'test@test.app')->firstOrFail();
         $this->assertSame('Test User', $user->name);
-        $this->assertTrue(Hash::check('secret', $user->password));
+        $this->assertTrue(Hash::check('secret123', $user->password));
 
         Event::assertDispatched(Registered::class, fn (Registered $e) => $e->user->is($user));
     }
@@ -42,8 +42,8 @@ class RegisterTest extends TestCase
         $this->postJson('/api/register', [
             'name' => 'Test User',
             'email' => 'test@test.app',
-            'password' => 'secret',
-            'password_confirmation' => 'secret',
+            'password' => 'secret123',
+            'password_confirmation' => 'secret123',
         ])
             ->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
@@ -61,5 +61,18 @@ class RegisterTest extends TestCase
             ->assertJsonValidationErrors(['name', 'email', 'password']);
 
         $this->assertDatabaseCount('users', 0);
+    }
+
+    #[Test]
+    public function password_must_have_at_least_eight_characters(): void
+    {
+        $this->postJson('/api/register', [
+            'name' => 'Test User',
+            'email' => 'short@test.app',
+            'password' => 'seven77',
+            'password_confirmation' => 'seven77',
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['password']);
     }
 }

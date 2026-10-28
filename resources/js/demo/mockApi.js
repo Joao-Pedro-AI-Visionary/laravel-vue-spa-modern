@@ -153,7 +153,7 @@ export function createMockApi ({ storage = globalThis.localStorage, delay = 120,
       if (v.fails()) return invalid(msgs, v.errors)
       const user = { id: db.nextId++, name: String(data.name).trim(), email: String(data.email).trim(), password: String(data.password), email_verified_at: null }
       db.users.push(user)
-      return [201, publicUser(user), true]
+      return [200, publicUser(user), true]
     }],
 
     ['post', /^\/api\/logout$/, ({ db, headers }) => {

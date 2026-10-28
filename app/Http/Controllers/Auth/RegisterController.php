@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
@@ -20,7 +21,7 @@ class RegisterController extends Controller
         $data = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email:filter|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         $user = User::create([

@@ -29,6 +29,21 @@ Also added in this fork:
 - Accessibility: the "Skip to main content" link is hidden until it gets keyboard focus, with a 44px target (covered by an E2E test).
 - API routes always answer with JSON errors (401, 404, 422) and unknown `/api/*` paths return a JSON 404 instead of the SPA shell.
 
+### Redesign
+
+The front end was redesigned as a SaaS-style product, mobile first (390x844) and then desktop (1440). The decisions behind it, mapped to UX laws and to the files that implement them, are in [docs/UX.md](docs/UX.md).
+
+- **Landing page** (`resources/js/pages/welcome.vue`, `layouts/landing.vue`): hero with a dashboard preview, feature grid, grouped tech stack chips and a final CTA band. In the demo build, "Try the live demo" opens `/login?demo=1`, which prefills the demo account.
+- **Auth split screen** (`layouts/auth.vue`): form on the left and a brand panel on the right from 992px up; stacked labels, inline errors linked with `aria-describedby`, a show password toggle and the "Forgot Your Password?" link next to the password label (`components/FormRow.vue`).
+- **Dashboard** (`pages/home.vue`): profile, session, security and language cards, with a single primary action.
+- **Settings** (`pages/settings/`): sidebar tabs on desktop, segmented tabs on phones, full width save buttons on phones and success alerts after saving.
+- **Dark mode**: Bootstrap 5.3 color modes, applied by an inline script before the first paint (no flash) and kept in sync by `resources/js/lib/theme.js`. The toggle lives in the navbar, the auth header and the footer.
+- **Design tokens**: Inter (self-hosted variable font), indigo `#4F46E5` to violet `#7C3AED` gradient reserved for the primary button, one surface and border token set for both themes, 48px controls and 44px minimum targets (`resources/sass/_variables.scss`, `resources/sass/elements/`).
+- **i18n**: all new copy is translated in the 5 locales (en, es, fr, pt-BR, zh-CN).
+- **Brand mark and icon set**: a geometric logo (`components/LogoMark.vue`, source in `scripts/brand/mark.svg`) and generated `favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, PWA icons (including a maskable one) and `site.webmanifest`.
+- **Social card**: `public/og-image.png` (1200x630) with Open Graph and Twitter tags in both `index.html` and `resources/views/spa.blade.php`.
+- **Demo pill**: the demo notice is a small dismissible floating pill instead of a full-width banner (`components/DemoBanner.vue`).
+
 ## Live demo
 
 **https://laravel-vue-spa-modern.vercel.app**
@@ -128,6 +143,24 @@ npm run preview:demo   # serve dist-demo/ on http://localhost:4173
 ```
 
 Demo mode is enabled by `vite --mode demo` (or `VITE_DEMO_MODE=true`). It builds from the root `index.html` instead of the Blade view and does not need PHP.
+
+## Brand assets and screenshots
+
+Both scripts use the Playwright Chromium installed for the E2E tests (`npx playwright install chromium`).
+
+```bash
+# Regenerate public/favicon.svg, favicon.ico, apple-touch-icon.png, icon-192.png,
+# icon-512.png, icon-maskable-512.png, og-image.png and site.webmanifest
+# from the sources in scripts/brand/ (mark.svg and og.html)
+npm run icons
+
+# Screenshots of the landing page, login and dashboard at 390x844 and 1440x900.
+# Logs in with the demo account, so point it at the demo build (npm run preview:demo).
+node scripts/screenshots.mjs <baseURL> <outDir> [dark]
+node scripts/screenshots.mjs http://localhost:4173 test-results/screens dark
+```
+
+Without arguments the screenshots script uses `http://localhost:4173` and `test-results/screens`. See [docs/UX.md](docs/UX.md#brand-assets) for what each generated file is.
 
 ## Deploy to Vercel
 

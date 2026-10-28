@@ -1,12 +1,7 @@
 <template>
-  <div class="error-layout text-center mt-4">
+  <main id="main-content" class="error-layout text-center mt-4 px-3" tabindex="-1">
     <h1>{{ $t('error_alert_title') }}</h1>
     <p>{{ $t('error_alert_text') }}</p>
-  </div>
+    <RouterLink :to="{ name: 'welcome' }">{{ $t('go_home') }}</RouterLink>
+  </main>
 </template>
-
-<script>
-export default {
-  name: 'ErrorLayout'
-}
-</script>

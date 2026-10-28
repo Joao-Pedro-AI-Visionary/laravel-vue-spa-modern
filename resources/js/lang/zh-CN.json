@@ -30,5 +30,16 @@
   "password_updated": "您的密码已经更新!",
   "new_password": "新密码",
   "login_with": "登录",
-  "register_with": "注册"
+  "register_with": "注册",
+  "skip_to_content": "跳到主要内容",
+  "language": "语言",
+  "dismiss": "关闭",
+  "demo_banner": "演示模式：无需服务器，数据仅保存在你的浏览器中。",
+  "demo_hint": "演示账号：{email} / {password}",
+  "use_demo_account": "使用演示账号",
+  "verify_email": "验证邮箱",
+  "send_verification_link": "发送验证链接",
+  "resend_verification_link": "重新发送验证链接？",
+  "failed_to_verify_email": "邮箱验证失败。",
+  "verify_email_address": "我们已向你发送了包含验证链接的邮件。"
 }

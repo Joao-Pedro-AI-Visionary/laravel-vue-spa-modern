@@ -1,61 +1,48 @@
 <template>
-  <div>
-    <div class="top-right links">
-      <template v-if="authenticated">
-        <router-link :to="{ name: 'home' }">
-          {{ $t('home') }}
-        </router-link>
-      </template>
+  <div class="welcome w-100">
+    <nav class="top-right links" :aria-label="$t('home')">
+      <RouterLink v-if="auth.check" :to="{ name: 'home' }">
+        {{ $t('home') }}
+      </RouterLink>
       <template v-else>
-        <router-link :to="{ name: 'login' }">
+        <RouterLink :to="{ name: 'login' }">
           {{ $t('login') }}
-        </router-link>
-        <router-link :to="{ name: 'register' }">
+        </RouterLink>
+        <RouterLink :to="{ name: 'register' }">
           {{ $t('register') }}
-        </router-link>
+        </RouterLink>
       </template>
-    </div>
+    </nav>
 
     <div class="text-center">
-      <div class="title mb-4">
-        {{ title }}
-      </div>
+      <h1 class="title mb-4">
+        {{ config.appName }}
+      </h1>
 
       <div class="links">
-        <a href="https://github.com/cretueusebiu/laravel-vue-spa">github.com/cretueusebiu/laravel-vue-spa</a>
+        <a href="https://github.com/cretueusebiu/laravel-vue-spa" rel="noopener">github.com/cretueusebiu/laravel-vue-spa</a>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
+<script setup>
+import { config } from '~/config.js'
+import { useAuthStore } from '~/stores/auth.js'
 
-export default {
-  layout: 'basic',
-
-  metaInfo () {
-    return { title: this.$t('home') }
-  },
-
-  data: () => ({
-    title: window.config.appName
-  }),
-
-  computed: mapGetters({
-    authenticated: 'auth/check'
-  })
-}
+const auth = useAuthStore()
 </script>
 
 <style scoped>
 .top-right {
   position: absolute;
   right: 10px;
-  top: 18px;
+  top: 10px;
 }
 
 .title {
-  font-size: 85px;
+  font-size: clamp(2.5rem, 9vw, 5.3rem);
+  font-weight: 200;
+  overflow-wrap: anywhere;
 }
 </style>

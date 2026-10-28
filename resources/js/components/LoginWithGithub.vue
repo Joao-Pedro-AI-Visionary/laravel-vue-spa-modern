@@ -1,66 +1,45 @@
 <template>
-  <button v-if="githubAuth" class="btn btn-dark ms-auto" type="button" @click="login">
+  <button v-if="config.githubAuth" class="btn btn-dark ms-auto" type="button" @click="login">
     {{ $t('login_with') }}
-    <fa :icon="['fab', 'github']" />
+    <Fa :icon="['fab', 'github']" />
   </button>
 </template>
 
-<script>
-export default {
-  name: 'LoginWithGithub',
+<script setup>
+import { onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { config } from '~/config.js'
+import { useAuthStore } from '~/stores/auth.js'
 
-  computed: {
-    githubAuth: () => window.config.githubAuth,
-    url: () => '/api/oauth/github'
-  },
+const auth = useAuthStore()
+const router = useRouter()
+const { t } = useI18n()
 
-  mounted () {
-    window.addEventListener('message', this.onMessage, false)
-  },
-
-  beforeDestroy () {
-    window.removeEventListener('message', this.onMessage)
-  },
-
-  methods: {
-    async login () {
-      const newWindow = openWindow('', this.$t('login'))
-
-      const url = await this.$store.dispatch('auth/fetchOauthUrl', {
-        provider: 'github'
-      })
-
-      newWindow.location.href = url
-    },
-
-    /**
-     * @param {MessageEvent} e
-     */
-    onMessage (e) {
-      if (e.origin !== window.origin || !e.data.token) {
-        return
-      }
-
-      this.$store.dispatch('auth/saveToken', {
-        token: e.data.token
-      })
-
-      this.$router.push({ name: 'home' })
-    }
+async function login () {
+  const popup = openWindow('', t('login'))
+  try {
+    const url = await auth.fetchOauthUrl('github')
+    if (popup) popup.location.href = url
+  } catch {
+    if (popup) popup.close()
   }
 }
 
-/**
- * @param  {Object} options
- * @return {Window}
- */
-function openWindow (url, title, options = {}) {
-  if (typeof url === 'object') {
-    options = url
-    url = ''
-  }
+/** @param {MessageEvent} e */
+async function onMessage (e) {
+  if (e.origin !== window.location.origin || !e.data || !e.data.token) return
 
-  options = { url, title, width: 600, height: 720, ...options }
+  auth.saveToken(e.data.token, true)
+  await auth.fetchUser()
+  router.push({ name: 'home' })
+}
+
+onMounted(() => window.addEventListener('message', onMessage, false))
+onBeforeUnmount(() => window.removeEventListener('message', onMessage))
+
+function openWindow (url, title, options = {}) {
+  options = { width: 600, height: 720, ...options }
 
   const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screen.left
   const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screen.top
@@ -70,17 +49,11 @@ function openWindow (url, title, options = {}) {
   options.left = ((width / 2) - (options.width / 2)) + dualScreenLeft
   options.top = ((height / 2) - (options.height / 2)) + dualScreenTop
 
-  const optionsStr = Object.keys(options).reduce((acc, key) => {
-    acc.push(`${key}=${options[key]}`)
-    return acc
-  }, []).join(',')
+  const features = Object.entries(options).map(([k, v]) => `${k}=${v}`).join(',')
+  const popup = window.open(url, title, features)
 
-  const newWindow = window.open(url, title, optionsStr)
+  if (popup && popup.focus) popup.focus()
 
-  if (window.focus) {
-    newWindow.focus()
-  }
-
-  return newWindow
+  return popup
 }
 </script>

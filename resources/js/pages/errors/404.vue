@@ -1,19 +1,13 @@
 <template>
-  <card class="text-center">
-    <h3 class="mb-4">
+  <Card class="text-center">
+    <h1 class="h3 mb-4">
       {{ $t('page_not_found') }}
-    </h3>
+    </h1>
 
     <div class="links">
-      <router-link :to="{ name: 'welcome' }">
+      <RouterLink :to="{ name: 'welcome' }">
         {{ $t('go_home') }}
-      </router-link>
+      </RouterLink>
     </div>
-  </card>
+  </Card>
 </template>
-
-<script>
-export default {
-  name: 'NotFound'
-}
-</script>

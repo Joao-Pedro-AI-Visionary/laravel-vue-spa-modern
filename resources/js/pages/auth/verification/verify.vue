@@ -1,55 +1,51 @@
 <template>
   <div class="row">
     <div class="col-lg-7 m-auto">
-      <card :title="$t('verify_email')">
-        <template v-if="success">
-          <div class="alert alert-success" role="alert">
+      <Card :title="$t('verify_email')">
+        <div v-if="loading" class="placeholder-glow" role="status" aria-live="polite">
+          <span class="placeholder col-8" />
+        </div>
+        <template v-else-if="success">
+          <div class="alert alert-success" role="status">
             {{ success }}
           </div>
 
-          <router-link :to="{ name: 'login' }" class="btn btn-primary">
+          <RouterLink :to="{ name: 'login' }" class="btn btn-primary">
             {{ $t('login') }}
-          </router-link>
+          </RouterLink>
         </template>
         <template v-else>
           <div class="alert alert-danger" role="alert">
             {{ error || $t('failed_to_verify_email') }}
           </div>
 
-          <router-link :to="{ name: 'verification.resend' }" class="small float-end">
+          <RouterLink :to="{ name: 'verification.resend' }" class="small float-end">
             {{ $t('resend_verification_link') }}
-          </router-link>
+          </RouterLink>
         </template>
-      </card>
+      </Card>
     </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { http } from '~/lib/http.js'
 
-const qs = (params) => Object.keys(params).map(key => `${key}=${params[key]}`).join('&')
+const route = useRoute()
+const loading = ref(true)
+const success = ref('')
+const error = ref('')
 
-export default {
-  async beforeRouteEnter (to, from, next) {
-    try {
-      const { data } = await axios.post(`/api/email/verify/${to.params.id}?${qs(to.query)}`)
-
-      next(vm => { vm.success = data.status })
-    } catch (e) {
-      next(vm => { vm.error = e.response.data.status })
-    }
-  },
-
-  middleware: 'guest',
-
-  metaInfo () {
-    return { title: this.$t('verify_email') }
-  },
-
-  data: () => ({
-    error: '',
-    success: ''
-  })
-}
+onMounted(async () => {
+  try {
+    const { data } = await http.post(`/api/email/verify/${encodeURIComponent(route.params.id)}`, null, { params: route.query })
+    success.value = data.status
+  } catch (e) {
+    error.value = (e.response && e.response.data && e.response.data.status) || ''
+  } finally {
+    loading.value = false
+  }
+})
 </script>

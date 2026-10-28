@@ -30,5 +30,16 @@
   "password_updated": "¡Tu contraseña ha sido actualizada!",
   "new_password": "Nueva Contraseña",
   "login_with": "Iniciar Sesión con",
-  "register_with": "Registro con"
+  "register_with": "Registro con",
+  "skip_to_content": "Saltar al contenido principal",
+  "language": "Idioma",
+  "dismiss": "Cerrar",
+  "demo_banner": "Modo demo: sin servidor, los datos se quedan en tu navegador.",
+  "demo_hint": "Cuenta demo: {email} / {password}",
+  "use_demo_account": "Usar cuenta demo",
+  "verify_email": "Verificar correo",
+  "send_verification_link": "Enviar enlace de verificación",
+  "resend_verification_link": "¿Reenviar enlace de verificación?",
+  "failed_to_verify_email": "No se pudo verificar el correo.",
+  "verify_email_address": "Te enviamos un correo con el enlace de verificación."
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laravel Vue SPA demo (Vue 3, Vite, Pinia). Runs entirely in your browser.">
+  <title>Laravel Vue SPA</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // Demo build: same shape the Laravel blade view provides.
+    window.config = {
+      appName: 'Laravel Vue SPA',
+      locale: 'en',
+      locales: { en: 'EN', es: 'ES', fr: 'FR', 'pt-BR': 'BR', 'zh-CN': '中文' },
+      githubAuth: null
+    }
+  </script>
+  <script type="module" src="/resources/js/app.js"></script>
+</body>
+</html>

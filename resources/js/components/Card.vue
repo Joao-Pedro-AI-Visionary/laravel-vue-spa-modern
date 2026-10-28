@@ -1,21 +1,21 @@
 <template>
-  <div class="card">
+  <section class="card" :aria-labelledby="title ? headingId : undefined">
     <div v-if="title" class="card-header">
-      {{ title }}
+      <h2 :id="headingId" class="card-title fs-6 fw-normal m-0">{{ title }}</h2>
     </div>
 
     <div class="card-body">
       <slot />
     </div>
-  </div>
+  </section>
 </template>
 
-<script>
-export default {
-  name: 'Card',
+<script setup>
+import { useId } from 'vue'
 
-  props: {
-    title: { type: String, default: null }
-  }
-}
+defineProps({
+  title: { type: String, default: null }
+})
+
+const headingId = useId()
 </script>

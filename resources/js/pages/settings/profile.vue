@@ -1,73 +1,36 @@
 <template>
-  <card :title="$t('your_info')">
-    <form @submit.prevent="update" @keydown="form.onKeydown($event)">
-      <alert-success :form="form" :message="$t('info_updated')" />
+  <Card :title="$t('your_info')">
+    <form novalidate @submit.prevent="update" @keydown="form.onKeydown($event)">
+      <AlertSuccess :form="form" :message="$t('info_updated')" />
 
-      <!-- Name -->
-      <div class="mb-3 row">
-        <label class="col-md-3 col-form-label text-md-end">{{ $t('name') }}</label>
-        <div class="col-md-7">
-          <input v-model="form.name" :class="{ 'is-invalid': form.errors.has('name') }" class="form-control" type="text" name="name">
-          <has-error :form="form" field="name" />
-        </div>
-      </div>
+      <FormRow v-model="form.name" name="name" autocomplete="name" :label="$t('name')" :error="form.get('name')" />
+      <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
 
-      <!-- Email -->
-      <div class="mb-3 row">
-        <label class="col-md-3 col-form-label text-md-end">{{ $t('email') }}</label>
-        <div class="col-md-7">
-          <input v-model="form.email" :class="{ 'is-invalid': form.errors.has('email') }" class="form-control" type="email" name="email">
-          <has-error :form="form" field="email" />
-        </div>
-      </div>
-
-      <!-- Submit Button -->
       <div class="mb-3 row">
         <div class="col-md-9 ms-md-auto">
-          <v-button :loading="form.busy" type="success">
+          <VButton :loading="form.busy" type="success">
             {{ $t('update') }}
-          </v-button>
+          </VButton>
         </div>
       </div>
     </form>
-  </card>
+  </Card>
 </template>
 
-<script>
-import Form from 'vform'
-import { mapGetters } from 'vuex'
+<script setup>
+import { useForm } from '~/lib/form.js'
+import { useAuthStore } from '~/stores/auth.js'
 
-export default {
-  scrollToTop: false,
+const auth = useAuthStore()
+const form = useForm({ name: '', email: '' })
+form.fill(auth.user || {})
 
-  metaInfo () {
-    return { title: this.$t('settings') }
-  },
-
-  data: () => ({
-    form: new Form({
-      name: '',
-      email: ''
-    })
-  }),
-
-  computed: mapGetters({
-    user: 'auth/user'
-  }),
-
-  created () {
-    // Fill the form with user data.
-    this.form.keys().forEach(key => {
-      this.form[key] = this.user[key]
-    })
-  },
-
-  methods: {
-    async update () {
-      const { data } = await this.form.patch('/api/settings/profile')
-
-      this.$store.dispatch('auth/updateUser', { user: data })
-    }
+async function update () {
+  try {
+    const { data } = await form.patch('/api/settings/profile')
+    auth.updateUser(data)
+  } catch {
+    // validation errors are shown inline
   }
 }
 </script>

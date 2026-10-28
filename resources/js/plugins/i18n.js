@@ -1,30 +1,42 @@
-import Vue from 'vue'
-import store from '~/store'
-import VueI18n from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
 
-Vue.use(VueI18n)
-
-const i18n = new VueI18n({
+export const i18n = createI18n({
+  legacy: false,
+  globalInjection: true,
   locale: 'en',
+  fallbackLocale: 'en',
+  missingWarn: false,
+  fallbackWarn: false,
   messages: {}
 })
 
-/**
- * @param {String} locale
- */
-export async function loadMessages (locale) {
-  if (Object.keys(i18n.getLocaleMessage(locale)).length === 0) {
-    const messages = await import(/* webpackChunkName: '' */ `~/lang/${locale}`)
-    i18n.setLocaleMessage(locale, messages)
-  }
+// Lazy-loaded locale chunks. Keys are exact on-disk paths (case-sensitive).
+const loaders = import.meta.glob('../lang/*.json', { import: 'default' })
 
-  if (i18n.locale !== locale) {
-    i18n.locale = locale
-  }
+export function availableMessageLocales () {
+  return Object.keys(loaders).map(p => p.replace(/^.*\/(.+)\.json$/, '$1'))
 }
 
-;(async function () {
-  await loadMessages(store.getters['lang/locale'])
-})()
+/**
+ * Load messages for a locale (once) and make it active.
+ * @param {string} locale
+ */
+export async function loadMessages (locale) {
+  const loader = loaders[`../lang/${locale}.json`]
 
-export default i18n
+  if (loader && Object.keys(i18n.global.getLocaleMessage(locale)).length === 0) {
+    i18n.global.setLocaleMessage(locale, await loader())
+  }
+
+  if (locale !== 'en' && Object.keys(i18n.global.getLocaleMessage('en')).length === 0) {
+    i18n.global.setLocaleMessage('en', await loaders['../lang/en.json']())
+  }
+
+  if (i18n.global.locale.value !== locale) {
+    i18n.global.locale.value = locale
+  }
+
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('lang', locale)
+  }
+}

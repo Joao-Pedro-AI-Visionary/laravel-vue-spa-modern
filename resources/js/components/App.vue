@@ -1,66 +1,25 @@
 <template>
-  <div id="app">
-    <loading ref="loading" />
-
-    <transition name="page" mode="out-in">
-      <component :is="layout" v-if="layout" />
-    </transition>
-  </div>
+  <a class="skip-link" href="#main-content">{{ $t('skip_to_content') }}</a>
+  <DemoBanner v-if="DEMO_MODE" />
+  <Loading />
+  <Transition name="page" mode="out-in">
+    <component :is="layout" :key="layoutName" />
+  </Transition>
 </template>
 
-<script>
-import Loading from './Loading'
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { DEMO_MODE } from '~/config.js'
+import Loading from './Loading.vue'
+import DemoBanner from './DemoBanner.vue'
+import DefaultLayout from '~/layouts/default.vue'
+import BasicLayout from '~/layouts/basic.vue'
+import ErrorLayout from '~/layouts/error.vue'
 
-// Load layout components dynamically.
-const requireContext = require.context('~/layouts', false, /.*\.vue$/)
+const layouts = { default: DefaultLayout, basic: BasicLayout, error: ErrorLayout }
 
-const layouts = requireContext.keys()
-  .map(file =>
-    [file.replace(/(^.\/)|(\.vue$)/g, ''), requireContext(file)]
-  )
-  .reduce((components, [name, component]) => {
-    components[name] = component.default || component
-    return components
-  }, {})
-
-export default {
-  el: '#app',
-
-  components: {
-    Loading
-  },
-
-  data: () => ({
-    layout: null,
-    defaultLayout: 'default'
-  }),
-
-  metaInfo () {
-    const { appName } = window.config
-
-    return {
-      title: appName,
-      titleTemplate: `%s · ${appName}`
-    }
-  },
-
-  mounted () {
-    this.$loading = this.$refs.loading
-  },
-
-  methods: {
-    /**
-     * Set the application layout.
-     *
-     * @param {String} layout
-     */
-    setLayout (layout) {
-      if (!layout || !layouts[layout]) {
-        layout = this.defaultLayout
-      }
-
-      this.layout = layouts[layout]
-    }
-  }
-}
+const route = useRoute()
+const layoutName = computed(() => (layouts[route.meta.layout] ? route.meta.layout : 'default'))
+const layout = computed(() => layouts[layoutName.value])
 </script>

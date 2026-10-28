@@ -35,5 +35,11 @@
   "send_verification_link": "Send Verification Link",
   "resend_verification_link": "Resend Verification Link ?",
   "failed_to_verify_email": "Failed to verify email.",
-  "verify_email_address": "We sent you an email with an the verification link."
+  "verify_email_address": "We sent you an email with an the verification link.",
+  "skip_to_content": "Skip to main content",
+  "language": "Language",
+  "dismiss": "Dismiss",
+  "demo_banner": "Demo mode: no server involved, data stays in your browser.",
+  "demo_hint": "Demo account: {email} / {password}",
+  "use_demo_account": "Use demo account"
 }

@@ -1,21 +1,13 @@
 <template>
   <div class="main-layout">
-    <navbar />
+    <Navbar />
 
-    <div class="container-lg mt-4">
-      <child />
-    </div>
+    <main id="main-content" class="container-lg mt-4 pb-5" tabindex="-1">
+      <Child />
+    </main>
   </div>
 </template>
 
-<script>
-import Navbar from '~/components/Navbar'
-
-export default {
-  name: 'MainLayout',
-
-  components: {
-    Navbar
-  }
-}
+<script setup>
+import Navbar from '~/components/Navbar.vue'
 </script>

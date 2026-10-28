@@ -1,84 +1,49 @@
 <template>
   <div class="row">
     <div class="col-lg-7 m-auto">
-      <card :title="$t('reset_password')">
-        <form @submit.prevent="reset" @keydown="form.onKeydown($event)">
-          <alert-success :form="form" :message="status" />
+      <Card :title="$t('reset_password')">
+        <form novalidate @submit.prevent="reset" @keydown="form.onKeydown($event)">
+          <AlertSuccess :form="form" :message="status" />
 
-          <!-- Email -->
-          <div class="mb-3 row">
-            <label class="col-md-3 col-form-label text-md-end">{{ $t('email') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.email" :class="{ 'is-invalid': form.errors.has('email') }" class="form-control" type="email" name="email" readonly>
-              <has-error :form="form" field="email" />
-            </div>
-          </div>
+          <FormRow v-model="form.email" name="email" type="email" autocomplete="email" readonly :label="$t('email')" :error="form.get('email')" />
+          <FormRow v-model="form.password" name="password" type="password" autocomplete="new-password" :label="$t('password')" :error="form.get('password')" />
+          <FormRow v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" :label="$t('confirm_password')" :error="form.get('password_confirmation')" />
 
-          <!-- Password -->
-          <div class="mb-3 row">
-            <label class="col-md-3 col-form-label text-md-end">{{ $t('password') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.password" :class="{ 'is-invalid': form.errors.has('password') }" class="form-control" type="password" name="password">
-              <has-error :form="form" field="password" />
-            </div>
-          </div>
-
-          <!-- Password Confirmation -->
-          <div class="mb-3 row">
-            <label class="col-md-3 col-form-label text-md-end">{{ $t('confirm_password') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.password_confirmation" :class="{ 'is-invalid': form.errors.has('password_confirmation') }" class="form-control" type="password" name="password_confirmation">
-              <has-error :form="form" field="password_confirmation" />
-            </div>
-          </div>
-
-          <!-- Submit Button -->
           <div class="mb-3 row">
             <div class="col-md-9 ms-md-auto">
-              <v-button :loading="form.busy">
+              <VButton :loading="form.busy">
                 {{ $t('reset_password') }}
-              </v-button>
+              </VButton>
             </div>
           </div>
         </form>
-      </card>
+      </Card>
     </div>
   </div>
 </template>
 
-<script>
-import Form from 'vform'
+<script setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { useForm } from '~/lib/form.js'
 
-export default {
-  middleware: 'guest',
+const route = useRoute()
+const status = ref('')
+const form = useForm({
+  token: String(route.params.token || ''),
+  email: String(route.query.email || ''),
+  password: '',
+  password_confirmation: ''
+})
 
-  metaInfo () {
-    return { title: this.$t('reset_password') }
-  },
-
-  data: () => ({
-    status: '',
-    form: new Form({
-      token: '',
-      email: '',
-      password: '',
-      password_confirmation: ''
-    })
-  }),
-
-  created () {
-    this.form.email = this.$route.query.email
-    this.form.token = this.$route.params.token
-  },
-
-  methods: {
-    async reset () {
-      const { data } = await this.form.post('/api/password/reset')
-
-      this.status = data.status
-
-      this.form.reset()
-    }
+async function reset () {
+  try {
+    const { data } = await form.post('/api/password/reset')
+    status.value = data.status
+    form.password = ''
+    form.password_confirmation = ''
+  } catch {
+    // validation errors are shown inline
   }
 }
 </script>

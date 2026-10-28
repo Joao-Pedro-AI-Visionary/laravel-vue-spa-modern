@@ -1,61 +1,33 @@
 <template>
-  <card :title="$t('your_password')">
-    <form @submit.prevent="update" @keydown="form.onKeydown($event)">
-      <alert-success :form="form" :message="$t('password_updated')" />
+  <Card :title="$t('your_password')">
+    <form novalidate @submit.prevent="update" @keydown="form.onKeydown($event)">
+      <AlertSuccess :form="form" :message="$t('password_updated')" />
 
-      <!-- Password -->
-      <div class="mb-3 row">
-        <label class="col-md-3 col-form-label text-md-end">{{ $t('new_password') }}</label>
-        <div class="col-md-7">
-          <input v-model="form.password" :class="{ 'is-invalid': form.errors.has('password') }" class="form-control" type="password" name="password">
-          <has-error :form="form" field="password" />
-        </div>
-      </div>
+      <FormRow v-model="form.password" name="password" type="password" autocomplete="new-password" :label="$t('new_password')" :error="form.get('password')" />
+      <FormRow v-model="form.password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" :label="$t('confirm_password')" :error="form.get('password_confirmation')" />
 
-      <!-- Password Confirmation -->
-      <div class="mb-3 row">
-        <label class="col-md-3 col-form-label text-md-end">{{ $t('confirm_password') }}</label>
-        <div class="col-md-7">
-          <input v-model="form.password_confirmation" :class="{ 'is-invalid': form.errors.has('password_confirmation') }" class="form-control" type="password" name="password_confirmation">
-          <has-error :form="form" field="password_confirmation" />
-        </div>
-      </div>
-
-      <!-- Submit Button -->
       <div class="mb-3 row">
         <div class="col-md-9 ms-md-auto">
-          <v-button :loading="form.busy" type="success">
+          <VButton :loading="form.busy" type="success">
             {{ $t('update') }}
-          </v-button>
+          </VButton>
         </div>
       </div>
     </form>
-  </card>
+  </Card>
 </template>
 
-<script>
-import Form from 'vform'
+<script setup>
+import { useForm } from '~/lib/form.js'
 
-export default {
-  scrollToTop: false,
+const form = useForm({ password: '', password_confirmation: '' })
 
-  metaInfo () {
-    return { title: this.$t('settings') }
-  },
-
-  data: () => ({
-    form: new Form({
-      password: '',
-      password_confirmation: ''
-    })
-  }),
-
-  methods: {
-    async update () {
-      await this.form.patch('/api/settings/password')
-
-      this.form.reset()
-    }
+async function update () {
+  try {
+    await form.patch('/api/settings/password')
+    form.reset()
+  } catch {
+    // validation errors are shown inline
   }
 }
 </script>

@@ -1,30 +1,33 @@
 <template>
-  <div class="basic-layout d-flex align-items-center justify-content-center m-0 bg-white">
-    <child />
-  </div>
+  <main id="main-content" class="basic-layout d-flex align-items-center justify-content-center m-0 bg-white" tabindex="-1">
+    <Child />
+  </main>
 </template>
-
-<script>
-export default {
-  name: 'BasicLayout'
-}
-</script>
 
 <style lang="scss">
 .basic-layout {
-  color: #636b6f;
-  height: 100vh;
-  font-weight: 100;
+  color: #555d61;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 4.5rem 1rem 2rem;
+  font-weight: 300;
   position: relative;
 
   .links > a {
-    color: #636b6f;
-    padding: 0 25px;
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: #555d61;
+    padding: 0 1rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    letter-spacing: .1rem;
+    letter-spacing: 0.1rem;
     text-decoration: none;
     text-transform: uppercase;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 </style>

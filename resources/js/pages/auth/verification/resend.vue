@@ -1,64 +1,41 @@
 <template>
   <div class="row">
     <div class="col-lg-7 m-auto">
-      <card :title="$t('verify_email')">
-        <form @submit.prevent="send" @keydown="form.onKeydown($event)">
-          <alert-success :form="form" :message="status" />
+      <Card :title="$t('verify_email')">
+        <form novalidate @submit.prevent="send" @keydown="form.onKeydown($event)">
+          <AlertSuccess :form="form" :message="status" />
 
-          <!-- Email -->
-          <div class="mb-3 row">
-            <label class="col-md-3 col-form-label text-md-end">{{ $t('email') }}</label>
-            <div class="col-md-7">
-              <input v-model="form.email" :class="{ 'is-invalid': form.errors.has('email') }" class="form-control" type="email" name="email">
-              <has-error :form="form" field="email" />
-            </div>
-          </div>
+          <FormRow v-model="form.email" name="email" type="email" autocomplete="email" :label="$t('email')" :error="form.get('email')" />
 
-          <!-- Submit Button -->
           <div class="mb-3 row">
             <div class="col-md-9 ms-md-auto">
-              <v-button :loading="form.busy">
+              <VButton :loading="form.busy">
                 {{ $t('send_verification_link') }}
-              </v-button>
+              </VButton>
             </div>
           </div>
         </form>
-      </card>
+      </Card>
     </div>
   </div>
 </template>
 
-<script>
-import Form from 'vform'
+<script setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { useForm } from '~/lib/form.js'
 
-export default {
-  middleware: 'guest',
+const route = useRoute()
+const status = ref('')
+const form = useForm({ email: String(route.query.email || '') })
 
-  metaInfo () {
-    return { title: this.$t('verify_email') }
-  },
-
-  data: () => ({
-    status: '',
-    form: new Form({
-      email: ''
-    })
-  }),
-
-  created () {
-    if (this.$route.query.email) {
-      this.form.email = this.$route.query.email
-    }
-  },
-
-  methods: {
-    async send () {
-      const { data } = await this.form.post('/api/email/resend')
-
-      this.status = data.status
-
-      this.form.reset()
-    }
+async function send () {
+  try {
+    const { data } = await form.post('/api/email/resend')
+    status.value = data.status
+    form.reset()
+  } catch {
+    // validation errors are shown inline
   }
 }
 </script>

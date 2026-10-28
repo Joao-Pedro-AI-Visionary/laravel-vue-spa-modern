@@ -1,13 +1,7 @@
 <template>
-  <transition name="page" mode="out-in">
-    <slot>
-      <router-view />
-    </slot>
-  </transition>
+  <RouterView v-slot="{ Component, route }">
+    <Transition name="page" mode="out-in">
+      <component :is="Component" :key="route.matched[0] && route.matched[0].path" />
+    </Transition>
+  </RouterView>
 </template>
-
-<script>
-export default {
-  name: 'Child'
-}
-</script>

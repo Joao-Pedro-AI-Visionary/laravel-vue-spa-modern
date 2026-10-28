@@ -1,47 +1,38 @@
 <template>
   <div class="row justify-content-center">
     <div class="col-md-3 mb-3">
-      <card :title="$t('settings')" class="settings-card">
+      <Card :title="$t('settings')" class="settings-card">
         <ul class="nav flex-column nav-pills">
           <li v-for="tab in tabs" :key="tab.route" class="nav-item">
-            <router-link :to="{ name: tab.route }" class="nav-link" active-class="active">
-              <fa :icon="tab.icon" fixed-width />
+            <RouterLink :to="{ name: tab.route }" class="nav-link" active-class="active">
+              <Fa :icon="tab.icon" fixed-width aria-hidden="true" />
               {{ tab.name }}
-            </router-link>
+            </RouterLink>
           </li>
         </ul>
-      </card>
+      </Card>
     </div>
 
     <div class="col-md-7">
-      <transition name="fade" mode="out-in">
-        <router-view />
-      </transition>
+      <RouterView v-slot="{ Component }">
+        <Transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  middleware: 'auth',
+<script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-  computed: {
-    tabs () {
-      return [
-        {
-          icon: 'user',
-          name: this.$t('profile'),
-          route: 'settings.profile'
-        },
-        {
-          icon: 'lock',
-          name: this.$t('password'),
-          route: 'settings.password'
-        }
-      ]
-    }
-  }
-}
+const { t } = useI18n()
+
+const tabs = computed(() => [
+  { icon: 'user', name: t('profile'), route: 'settings.profile' },
+  { icon: 'lock', name: t('password'), route: 'settings.password' }
+])
 </script>
 
 <style>

@@ -1,38 +1,41 @@
 <template>
-  <li v-if="Object.keys(locales).length > 1" class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" role="button"
-       data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+  <li v-if="Object.keys(lang.locales).length > 1" class="nav-item dropdown">
+    <button
+      class="nav-link dropdown-toggle"
+      type="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      :aria-label="`${$t('language')}: ${lang.locales[lang.locale]}`"
+      data-testid="locale-toggle"
     >
-      {{ locales[locale] }}
-    </a>
-    <div class="dropdown-menu">
-      <a v-for="(value, key) in locales" :key="key" class="dropdown-item" href="#"
-         @click.prevent="setLocale(key)"
-      >
-        {{ value }}
-      </a>
-    </div>
+      {{ lang.locales[lang.locale] }}
+    </button>
+    <ul class="dropdown-menu">
+      <li v-for="(label, key) in lang.locales" :key="key">
+        <button
+          type="button"
+          class="dropdown-item"
+          :class="{ active: key === lang.locale }"
+          :aria-current="key === lang.locale ? 'true' : undefined"
+          :lang="key"
+          @click="setLocale(key)"
+        >
+          {{ label }}
+        </button>
+      </li>
+    </ul>
   </li>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import { loadMessages } from '~/plugins/i18n'
+<script setup>
+import { useLangStore } from '~/stores/lang.js'
+import { loadMessages } from '~/plugins/i18n.js'
 
-export default {
-  computed: mapGetters({
-    locale: 'lang/locale',
-    locales: 'lang/locales'
-  }),
+const lang = useLangStore()
 
-  methods: {
-    setLocale (locale) {
-      if (this.$i18n.locale !== locale) {
-        loadMessages(locale)
-
-        this.$store.dispatch('lang/setLocale', { locale })
-      }
-    }
-  }
+async function setLocale (locale) {
+  if (locale === lang.locale) return
+  await loadMessages(locale)
+  lang.setLocale(locale)
 }
 </script>

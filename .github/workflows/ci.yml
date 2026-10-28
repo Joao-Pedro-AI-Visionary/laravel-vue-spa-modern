@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [master]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   php:
     name: PHP 8.3 (PHPUnit)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v7
 
@@ -45,7 +45,7 @@ jobs:
 
   node:
     name: Node 24 (lint, Vitest, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v7
 
@@ -62,7 +62,7 @@ jobs:
 
   e2e-demo:
     name: E2E (Playwright, demo mode)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v7
 
@@ -93,7 +93,7 @@ jobs:
 
   e2e-laravel:
     name: E2E (Playwright, real Laravel API)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     env:
       APP_ENV: local
       APP_DEBUG: 'false'

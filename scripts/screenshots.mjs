@@ -36,6 +36,12 @@ try {
     await page.getByRole('button', { name: 'Log In', exact: true }).click()
     await page.waitForURL(url => url.pathname === '/home')
     await page.getByTestId('logged-in').waitFor()
+    // Wait for the layout transition (login -> app shell) to finish.
+    await page.waitForLoadState('networkidle')
+    await page.waitForFunction(() => {
+      const shell = document.querySelector('.app-shell')
+      return shell && getComputedStyle(shell).opacity === '1' && !document.querySelector('.page-enter-active, .page-leave-active')
+    })
     await page.screenshot({ path: path.join(out, `dashboard-${name}${suffix}.png`), fullPage: true })
 
     await context.close()
